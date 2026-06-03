@@ -4,178 +4,471 @@
     <meta charset="UTF-8">
     <title>杨逸 - 个人主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: "Times New Roman", serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
+            font-family: "Inter", "Noto Serif SC", "Microsoft YaHei", serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: #f5f0e8;
         }
 
-        h1 {
+        /* ===== 主容器 - 双栏布局 ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 50px;
+            padding: 50px 40px;
+        }
+
+        /* ===== 左侧栏 ===== */
+        .sidebar {
+            position: sticky;
+            top: 50px;
+            height: fit-content;
             text-align: center;
-            font-size: 32px;
-            margin-bottom: 5px;
         }
 
-        h2 {
-            border-bottom: 2px solid #333;
-            padding-bottom: 5px;
-            margin-top: 30px;
+        .avatar {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
         }
 
-        .intro {
-            text-align: justify;
-            font-size: 15px;
+        /* 名字 - 大号思源宋体 */
+        .sidebar h1 {
+            font-family: "Noto Serif SC", serif;
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            margin: 10px 0 5px 0;
+            color: #1a1a1a;
         }
 
-        .links {
-            text-align: center;
-            margin: 20px 0;
+        .sidebar .subtitle {
+            font-family: "Inter", sans-serif;
+            color: #d97706;
+            font-size: 12px;
+            letter-spacing: 4px;
+            font-weight: 700;
+            margin-bottom: 30px;
         }
 
-        .links a {
-            margin: 0 10px;
-            color: #0066cc;
+        /* 左侧链接 */
+        .sidebar-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 25px;
+            text-align: left;
+            padding: 0 15px;
+        }
+
+        .sidebar-links a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #444;
             text-decoration: none;
+            font-size: 14px;
+            padding: 10px 15px;
+            border-radius: 50px;
+            background: white;
+            transition: all 0.2s;
         }
 
-        .links a:hover {
-            text-decoration: underline;
+        .sidebar-links a:hover {
+            background: #1a1a1a;
+            color: white;
+            transform: translateX(4px);
         }
 
-        .links i {
-            margin-right: 5px;
-            color: #555;
+        .sidebar-links i {
+            width: 18px;
+            text-align: center;
+            color: #888;
         }
 
-        .links a:hover i {
-            color: #0066cc;
+        .sidebar-links a:hover i {
+            color: white;
         }
 
-        /* 论文条目样式 */
-        .pub-item {
+        /* 页面导航 */
+        .nav-menu {
+            margin-top: 30px;
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .nav-menu h4 {
+            font-family: "Inter", sans-serif;
+            font-size: 11px;
+            color: #d97706;
+            letter-spacing: 3px;
+            font-weight: 700;
             margin-bottom: 15px;
         }
 
+        .nav-menu a {
+            display: block;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 6px 0;
+            border-left: 2px solid transparent;
+            padding-left: 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-menu a:hover {
+            border-left-color: #d97706;
+            color: #d97706;
+        }
+
+        /* ===== 右侧主内容 ===== */
+        .main-content {
+            min-width: 0;
+        }
+
+        /* 介绍卡片 - 白色大卡 */
+        .intro-section {
+            background: white;
+            padding: 50px 55px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+        }
+
+        .intro-tag {
+            font-family: "Inter", sans-serif;
+            font-size: 12px;
+            color: #d97706;
+            letter-spacing: 4px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-family: "Noto Serif SC", serif;
+            font-size: 56px;
+            font-weight: 900;
+            line-height: 1.15;
+            margin: 0 0 25px 0;
+            letter-spacing: 2px;
+        }
+
+        .intro-section p {
+            font-size: 16px;
+            color: #444;
+            line-height: 1.9;
+            margin: 0 0 15px 0;
+        }
+
+        .intro-section p:last-child {
+            margin-bottom: 0;
+        }
+
+        .intro-section b {
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        /* 二级标题 */
+        h2 {
+            font-family: "Noto Serif SC", serif;
+            font-size: 32px;
+            font-weight: 900;
+            margin: 40px 0 20px 0;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2 i {
+            color: #d97706;
+            font-size: 24px;
+        }
+
+        h2 .tag {
+            font-family: "Inter", sans-serif;
+            font-size: 11px;
+            color: #d97706;
+            letter-spacing: 3px;
+            font-weight: 700;
+            margin-left: auto;
+            background: #fef3c7;
+            padding: 5px 12px;
+            border-radius: 50px;
+        }
+
+        /* 内容卡片 */
+        .section-block {
+            background: white;
+            padding: 35px 40px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+        }
+
+        .section-block ul,
+        .section-block ol {
+            margin: 0;
+            padding-left: 22px;
+        }
+
+        .section-block li {
+            margin: 12px 0;
+            font-size: 15px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* 论文 / 实习卡片 */
+        .pub-item {
+            padding: 20px 24px;
+            margin-bottom: 14px;
+            background: #faf6ef;
+            border-left: 4px solid #d97706;
+            border-radius: 12px;
+        }
+
+        .pub-item:last-child {
+            margin-bottom: 0;
+        }
+
         .pub-title {
-            font-weight: bold;
-            color: #222;
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 16px;
+            font-family: "Noto Serif SC", serif;
+        }
+
+        .pub-authors {
+            font-size: 14px;
+            color: #555;
+            margin: 6px 0;
         }
 
         .pub-venue {
             color: #b22222;
             font-style: italic;
+            font-size: 13px;
+        }
+
+        .pub-desc {
+            font-size: 14px;
+            color: #666;
+            margin-top: 6px;
+            line-height: 1.7;
         }
 
         .highlight {
-            font-weight: bold;
+            font-family: "Inter", sans-serif;
+            font-weight: 700;
+            color: #d97706;
+            font-size: 14px;
         }
 
-        /* 头像样式 */
-        .avatar {
-            display: block;
-            width: 320px;
-            height: 320px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 15px auto;
-            border: 3px solid #eee;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        /* 教学课程卡片 */
+        .teaching-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 28px 32px;
+            border-radius: 16px;
+        }
+
+        .teaching-card a {
+            font-family: "Noto Serif SC", serif;
+            color: #92400e;
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        .teaching-card a:hover {
+            text-decoration: underline;
+        }
+
+        .teaching-card .year {
+            color: #92400e;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .teaching-card .desc {
+            color: #78350f;
+            font-size: 14px;
+            margin-top: 8px;
+            line-height: 1.7;
+        }
+
+        /* 通用链接 */
+        a {
+            color: #d97706;
+        }
+
+        /* 响应式 */
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 30px 20px;
+            }
+
+            .sidebar {
+                position: static;
+            }
+
+            .intro-title {
+                font-size: 40px;
+            }
+
+            .sidebar h1 {
+                font-size: 42px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <img src="1.png" alt="杨逸" class="avatar">
+    <div class="container">
 
-    <h1>杨逸 (Yi Yang)</h1>
+        <!-- ===== 左侧栏 ===== -->
+        <aside class="sidebar">
+            <img src="1.png" alt="杨逸" class="avatar">
+            <h1>杨逸</h1>
+            <p class="subtitle">YI YANG · ZJU</p>
 
-    <p class="intro">
-        我目前是<b>浙江大学计算机学院</b>-计算机图形学方向-博士研究生，导师为<b>刘新国</b>教授。
-    </p>
-    <p class="intro">
-        本科毕业于南京航空航天大学数学学院信息与计算科学专业。
-    </p>
+            <div class="sidebar-links">
+                <a href="mailto:yiy@zju.edu.cn"><i class="fas fa-envelope"></i> yiy@zju.edu.cn</a>
+                <a href="https://scholar.google.com" target="_blank"><i class="fas fa-graduation-cap"></i> Google Scholar</a>
+                <a href="https://github.com/yiyang-zju" target="_blank"><i class="fab fa-github"></i> github.com/yiyang-zju</a>
+                <a href="#"><i class="fas fa-pen-nib"></i> Blog</a>
+            </div>
 
-    <p class="intro">
-        <b>研究方向</b>：三维重建与神经渲染（NeRF、3D Gaussian Splatting）、物理仿真（刚柔耦合、物理求解器）、计算机图形学。
-    </p>
+            <div class="nav-menu">
+                <h4>SECTIONS</h4>
+                <a href="#teaching">Currently Teaching</a>
+                <a href="#research">Research Interests</a>
+                <a href="#education">Education</a>
+                <a href="#publications">Publications</a>
+                <a href="#experience">Experience</a>
+                <a href="#awards">Awards & Honors</a>
+            </div>
+        </aside>
 
-    <div class="links">
-        <a href="mailto:yiy@zju.edu.cn"><i class="fas fa-envelope"></i> yiy@zju.edu.cn</a> &nbsp;|&nbsp;
-        <a href="https://scholar.google.com"><i class="fas fa-graduation-cap"></i> Google Scholar</a> &nbsp;|&nbsp;
-        <a href="https://github.com/yiyang-zju"><i class="fab fa-github"></i> github.com/yiyang-zju</a> &nbsp;|&nbsp;
-        <a href="#"><i class="fas fa-pen-nib"></i> Blog</a>
+        <!-- ===== 右侧主内容 ===== -->
+        <main class="main-content">
+
+            <!-- 个人介绍卡 -->
+            <div class="intro-section">
+                <div class="intro-tag">PERSONAL HOMEPAGE</div>
+                <h1 class="intro-title">Hello！<br>I am YI Yang。</h1>
+                <p>
+                    我目前是<b>浙江大学-计算机学院</b>计算机图形学-博士研究生，
+                    导师为 <a href="http://www.cad.zju.edu.cn/home/xgliu" target="_blank">刘新国</a> 教授。
+                </p>
+                <p>
+                    本科毕业于<b>南京航空航天大学</b>数学学院。
+                </p>
+                <p>
+                    <b>研究方向</b>：三维重建与神经渲染、物理仿真、计算机图形学。
+                </p>
+            </div>
+
+            <!-- Currently Teaching -->
+            <h2 id="teaching"><i class="fas fa-chalkboard-teacher"></i>Currently Teaching<span class="tag">NEW</span></h2>
+            <div class="section-block">
+                <div class="teaching-card">
+                    <a href="course.html">AI Agent 部署与实战</a><span class="year">· 2026</span>
+                    <div class="desc">从 0 入手教你一步步实现 Claude Code、Codex 自动化办公</div>
+                </div>
+            </div>
+
+            <!-- Research Interests -->
+            <h2 id="research"><i class="fas fa-lightbulb"></i>Research Interests</h2>
+            <div class="section-block">
+                <ul>
+                    <li><b>三维重建与神经渲染</b>（NeRF、3D GS）</li>
+                    <li><b>物理仿真</b>（XPBD、Physgaussian、Featherstone）</li>
+                    <li><b>AIGC</b>（Digital Human、Text-to-Image、UI-Aided Design）</li>
+                </ul>
+            </div>
+
+            <!-- Education -->
+            <h2 id="education"><i class="fas fa-user-graduate"></i>Education</h2>
+            <div class="section-block">
+                <ul>
+                    <li>
+                        <b>Ph.D.</b> in Computer Science, <b>Zhejiang University</b> (2022.04 - 2027.06)<br>
+                        <span style="color: #888; font-size: 13px;">计算机科学与技术学院 · CAD&CG 全国重点实验室</span>
+                    </li>
+                    <li>
+                        <b>B.S.</b> in Information and Computing Science, <b>Nanjing University of Aeronautics and Astronautics</b> (2018.09 - 2022.06)<br>
+                        <span style="color: #888; font-size: 13px;">数学学院 · 信息与计算科学</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Publications -->
+            <h2 id="publications"><i class="fas fa-book"></i>Publications</h2>
+            <div class="section-block">
+                <div class="pub-item">
+                    <div class="pub-title">Opti-NeuS: Neural Reconstruction for Dual-Layered Transparent and Opaque Objects</div>
+                    <div class="pub-authors"><b>Yi Yang</b>, G. Zhang, J. Tan, Xinguo Liu</div>
+                    <span class="pub-venue">CVPR 2026 (CCF-A), Accepted</span>
+                </div>
+            </div>
+
+            <!-- Patents -->
+            <h2><i class="fas fa-certificate"></i>Patents & Software Copyrights</h2>
+            <div class="section-block">
+                <ul>
+                    <li>软件著作权一篇（第一申请人，第一发明人，已授权）</li>
+                    <li>发明专利二篇（第一申请人，第一发明人，已授权）</li>
+                </ul>
+            </div>
+
+            <!-- Experience -->
+            <h2 id="experience"><i class="fas fa-briefcase"></i>Experience</h2>
+            <div class="section-block">
+                <div class="pub-item">
+                    <div class="pub-title">华为技术有限公司 · 华为云计算 BU</div>
+                    <div class="pub-authors">算法实习生 · 2025.09 - 2026.01</div>
+                    <div class="pub-desc">负责某未上市保密产品的图形外观高效渲染。</div>
+                </div>
+                <div class="pub-item">
+                    <div class="pub-title">浙江大学 CAD&CG 全国重点实验室 · 万象引擎</div>
+                    <div class="pub-authors">技术骨干 · 2026.01 - 2027.12</div>
+                    <div class="pub-desc">国产自主可控物理仿真引擎，对标 Nvidia 的 Newton 物理渲染引擎，负责刚体-柔体耦合部分的 XPBD、Semi-Implicit、Featherstone 等求解器程序编写。</div>
+                </div>
+            </div>
+
+            <!-- Awards & Honors -->
+            <h2 id="awards"><i class="fas fa-trophy"></i>Awards & Honors</h2>
+            <div class="section-block">
+                <ul>
+                    <li><span class="highlight">2023</span> · 第二十届中国研究生数学建模竞赛 <b>全国一等奖</b></li>
+                    <li><span class="highlight">2022</span> · 美国大学生数学建模竞赛 (MCM/ICM) <b>M 奖</b></li>
+                    <li><span class="highlight">2021</span> · 中国大学生计算机设计大赛 <b>全国三等奖</b>、江苏省一等奖</li>
+                    <li><span class="highlight">2020</span> · 全国大学生数学竞赛（专业 A 组）<b>江苏省三等奖</b></li>
+                    <li><span class="highlight">2019</span> · 全国大学生数学竞赛（专业 A 组）<b>江苏省三等奖</b></li>
+                </ul>
+            </div>
+
+        </main>
+
     </div>
-
-    <h2>Currently Teaching</h2>
-    <ul>
-        <li>
-            <a href="course.html"><b>AI Agent 部署与实战</b></a> · 2026 <br>
-            课程简介：从0入手教你一步步实现claude code、codex自动化办公
-        </li>
-    </ul>
-
-    <h2>Research Interests</h2>
-    <ul>
-        <li><b>三维重建与神经渲染</b>（NeRF、3D GS）</li>
-        <li><b>物理仿真</b>（XPBD、Physgaussian、Featherstone）</li>
-        <li><b>AIGC</b> (Digital Human、Text-to-Image、UI-Aided Design)</li>
-    </ul>
-
-    <h2>Education</h2>
-    <ul>
-        <li>
-            <b>Ph.D.</b> in Computer Science, <b>Zhejiang University</b> (2022.04 - 2027.06)<br>
-            计算机科学与技术学院-CAD&CG 全国重点实验室
-        </li>
-        <li>
-            <b>B.S.</b> in Information and Computing Science, <b>Nanjing University of Aeronautics and Astronautics</b> (2018.09 - 2022.06)<br>数学学院-信息与计算科学
-        </li>
-    </ul>
-
-    <h2>Publications</h2>
-
-    <div class="pub-item">
-        <span class="pub-title">Opti-NeuS: Neural Reconstruction for Dual-Layered Transparent and Opaque Objects</span><br>
-        <b>Yi Yang</b>, G. Zhang, J. Tan, Xinguo Liu. <br>
-        <span class="pub-venue">CVPR 2026 (CCF-A), Accepted.</span>
-    </div>
-
-
-    <h2>Patents & Software Copyrights</h2>
-    <ul>
-        <li>软件著作权一篇(第一申请人，第一发明人，已授权)</li>
-        <li>发明专利二篇(第一申请人，第一发明人，已授权)</li>
-    </ul>
-
-    <h2>Experience</h2>
-
-    <div class="pub-item">
-        <span class="pub-title">华为技术有限公司 (Huawei Technologies Co., Ltd)</span> &nbsp;|&nbsp; 华为云计算 BU <br>
-        <i>担任多媒体渲染和算法工程师 · 2025.09 - 2026.01</i><br>
-        负责某未上市保密产品的图形外观高效渲染。
-    </div>
-
-    <div class="pub-item">
-        <span class="pub-title">浙江大学 CAD&CG 全国重点实验室</span> &nbsp;|&nbsp; 国产自主可控物理仿真引擎"万象" <br>
-        <i>担任技术骨干 · 2026.01 - 2027.12</i><br>
-        对标 Nvidia 的 Newton 物理渲染引擎，负责刚体 - 柔体耦合部分的 XPBD、Semi-Implicit、Featherstone 等求解器程序编写。
-    </div>
-
-    
-
-    <h2>Awards & Honors</h2>
-    <ul>
-        <li><span class="highlight">2023</span> 第二十届中国研究生数学建模竞赛 <b>全国一等奖</b></li>
-        <li><span class="highlight">2022</span> 美国大学生数学建模竞赛 (MCM/ICM) <b>M 奖</b></li>
-        <li><span class="highlight">2021</span> 中国大学生计算机设计大赛 <b>全国三等奖、江苏省一等奖</b></li>
-        <li><span class="highlight">2020</span> 全国大学生数学竞赛(专业 A 组) <b>江苏省三等奖</b></li>
-        <li><span class="highlight">2019</span> 全国大学生数学竞赛(专业 A 组) <b>江苏省三等奖</b></li>
-    </ul>
 
 </body>
 </html>
