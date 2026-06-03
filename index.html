@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>杨逸 - 个人主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: "Times New Roman", serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        h2 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+
+        .intro {
+            text-align: justify;
+            font-size: 15px;
+        }
+
+        .links {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .links a {
+            margin: 0 10px;
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .links i {
+            margin-right: 5px;
+            color: #555;
+        }
+
+        .links a:hover i {
+            color: #0066cc;
+        }
+
+        /* 论文条目样式 */
+        .pub-item {
+            margin-bottom: 15px;
+        }
+
+        .pub-title {
+            font-weight: bold;
+            color: #222;
+        }
+
+        .pub-venue {
+            color: #b22222;
+            font-style: italic;
+        }
+
+        .highlight {
+            font-weight: bold;
+        }
+
+        /* 头像样式 */
+        .avatar {
+            display: block;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px auto;
+            border: 3px solid #eee;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <img src="1.png" alt="杨逸" class="avatar">
+
+    <h1>杨逸 (Yi Yang)</h1>
+
+    <p class="intro">
+        我目前是<b>浙江大学计算机学院</b>-计算机图形学方向-博士研究生，导师为<b>刘新国</b>教授。
+    </p>
+    <p class="intro">
+        本科毕业于南京航空航天大学数学学院信息与计算科学专业。
+    </p>
+
+    <p class="intro">
+        <b>研究方向</b>：三维重建与神经渲染（NeRF、3D Gaussian Splatting）、物理仿真（刚柔耦合、物理求解器）、计算机图形学。
+    </p>
+
+    <div class="links">
+        <a href="mailto:yiy@zju.edu.cn"><i class="fas fa-envelope"></i> yiy@zju.edu.cn</a> &nbsp;|&nbsp;
+        <a href="https://scholar.google.com"><i class="fas fa-graduation-cap"></i> Google Scholar</a> &nbsp;|&nbsp;
+        <a href="https://github.com/yiyang-zju"><i class="fab fa-github"></i> github.com/yiyang-zju</a> &nbsp;|&nbsp;
+        <a href="#"><i class="fas fa-pen-nib"></i> Blog</a>
+    </div>
+
+    <h2>Currently Teaching</h2>
+    <ul>
+        <li>
+            <a href="course.html"><b>AI Agent 部署与实战</b></a> · 2026 <br>
+            课程简介：从0入手教你一步步实现claude code、codex自动化办公
+        </li>
+    </ul>
+
+    <h2>Research Interests</h2>
+    <ul>
+        <li><b>三维重建与神经渲染</b>（NeRF、3D GS）</li>
+        <li><b>物理仿真</b>（XPBD、Physgaussian、Featherstone）</li>
+        <li><b>AIGC</b> (Digital Human、Text-to-Image、UI-Aided Design)</li>
+    </ul>
+
+    <h2>Education</h2>
+    <ul>
+        <li>
+            <b>Ph.D.</b> in Computer Science, <b>Zhejiang University</b> (2022.04 - 2027.06)<br>
+            计算机科学与技术学院-CAD&CG 全国重点实验室
+        </li>
+        <li>
+            <b>B.S.</b> in Information and Computing Science, <b>Nanjing University of Aeronautics and Astronautics</b> (2018.09 - 2022.06)<br>数学学院-信息与计算科学
+        </li>
+    </ul>
+
+    <h2>Publications</h2>
+
+    <div class="pub-item">
+        <span class="pub-title">Opti-NeuS: Neural Reconstruction for Dual-Layered Transparent and Opaque Objects</span><br>
+        <b>Yi Yang</b>, G. Zhang, J. Tan, Xinguo Liu. <br>
+        <span class="pub-venue">CVPR 2026 (CCF-A), Accepted.</span>
+    </div>
+
+
+    <h2>Patents & Software Copyrights</h2>
+    <ul>
+        <li>软件著作权一篇(第一申请人，第一发明人，已授权)</li>
+        <li>发明专利二篇(第一申请人，第一发明人，已授权)</li>
+    </ul>
+
+    <h2>Experience</h2>
+
+    <div class="pub-item">
+        <span class="pub-title">华为技术有限公司 (Huawei Technologies Co., Ltd)</span> &nbsp;|&nbsp; 华为云计算 BU <br>
+        <i>担任多媒体渲染和算法工程师 · 2025.09 - 2026.01</i><br>
+        负责某未上市保密产品的图形外观高效渲染。
+    </div>
+
+    <div class="pub-item">
+        <span class="pub-title">浙江大学 CAD&CG 全国重点实验室</span> &nbsp;|&nbsp; 国产自主可控物理仿真引擎"万象" <br>
+        <i>担任技术骨干 · 2026.01 - 2027.12</i><br>
+        对标 Nvidia 的 Newton 物理渲染引擎，负责刚体 - 柔体耦合部分的 XPBD、Semi-Implicit、Featherstone 等求解器程序编写。
+    </div>
+
+    
+
+    <h2>Awards & Honors</h2>
+    <ul>
+        <li><span class="highlight">2023</span> 第二十届中国研究生数学建模竞赛 <b>全国一等奖</b></li>
+        <li><span class="highlight">2022</span> 美国大学生数学建模竞赛 (MCM/ICM) <b>M 奖</b></li>
+        <li><span class="highlight">2021</span> 中国大学生计算机设计大赛 <b>全国三等奖、江苏省一等奖</b></li>
+        <li><span class="highlight">2020</span> 全国大学生数学竞赛(专业 A 组) <b>江苏省三等奖</b></li>
+        <li><span class="highlight">2019</span> 全国大学生数学竞赛(专业 A 组) <b>江苏省三等奖</b></li>
+    </ul>
+
+</body>
+</html>
