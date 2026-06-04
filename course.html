@@ -267,6 +267,20 @@
         #toc-area.hidden {
             display: none;
         }
+
+        /* 步骤序号样式 */
+        .substep {
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            margin: 12px 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #10b981;
+        }
+
+        .substep b {
+            color: #059669;
+        }
     </style>
 </head>
 <body>
@@ -601,7 +615,7 @@ $env:https_proxy="http://127.0.0.1:10808"</code></pre>
     </p>
 
     <div class="tip-box">
-        💡 <b>核心优势</b>：① 国内访问无需翻墙；② 一个 Key 同时调 Claude 和 GPT；③ 朋友拼车，月费分摊；④ 支持 Claude Code、Codex、LobeChat 等所有主流客户端。
+        💡 <b>核心优势</b>：① 国内访问无需翻墙；② 一个 Key 同时调 Claude 和 GPT；③ 朋友拼车，月费分摊；④ 支持 Claude Code、Codex、网页聊天等所有主流客户端。
     </div>
 
     <h3>步骤一：注册账号</h3>
@@ -616,6 +630,10 @@ $env:https_proxy="http://127.0.0.1:10808"</code></pre>
         <tr><td>其他</td><td>默认即可</td></tr>
     </table>
     <p>创建成功后会显示 <code>sk-xxx</code> 密钥，<b>立刻复制保存</b>，关闭后看不到完整 Key。</p>
+
+    <div class="tip-box">
+        💡 建议同时创建两个密钥：一个绑 <b>anthropic-default</b>（用于 Claude），一个绑 <b>openai-default</b>（用于 GPT），方便在网页版同时切换两个模型。
+    </div>
 
     <h3>步骤三：Claude Code 配置（接入 Claude）</h3>
     <p>打开 PowerShell，运行（替换成你的 sk-xxx）：</p>
@@ -658,15 +676,84 @@ goals = true</code></pre>
     <pre><code>codex</code></pre>
 
     <h3>步骤五：网页直接聊天（最省事）</h3>
-    <p>不想配命令行？直接用网页版：</p>
+    <p>不想配命令行？打开网页版 <b>AI-Chat</b>：</p>
     <p><a href="http://chat.drivers-ai.com">http://chat.drivers-ai.com</a></p>
-    <p>输入访问密码 <code>drivers2026</code> 进入，自带 Claude + GPT 切换。</p>
+    <p>这是基于 <b>Open WebUI</b> 的聊天界面，体验类似 ChatGPT 官网，支持 Claude 和 GPT 任意切换。</p>
 
-    <div class="tip-box">
-        💡 <b>使用建议</b>：日常聊天用网页版，写代码用 Claude Code，自动化任务用 Codex。
+    <h4>① 首次注册</h4>
+    <div class="substep">
+        <b>填邮箱密码 → 注册</b><br>
+        第一次进入会让你创建账号，这是 AI-Chat 自己的账号系统，跟 Drivers AI 中转站后台账号是<b>独立的</b>，重新设一套即可。
     </div>
 
-    <h3>常见问题</h3>
+    <h4>② 配置 API 接入（关键步骤）</h4>
+
+    <p>登录后默认看不到任何模型，需要手动配置：</p>
+
+    <div class="substep">
+        <b>1. 进入管理员面板</b><br>
+        点击<b>左下角你的头像</b> → 选择「<b>Admin Panel</b> / 管理员面板」。
+    </div>
+
+    <div class="substep">
+        <b>2. 进入外部连接设置</b><br>
+        顶部点「<b>Settings / 设置</b>」→ 左侧菜单点「<b>Connections / 外部连接</b>」。
+    </div>
+
+    <div class="substep">
+        <b>3. 删除默认连接</b><br>
+        如果看到 <code>https://api.openai.com/v1</code> 这条默认连接，先<b>删除它</b>（点旁边的垃圾桶图标），它指向 OpenAI 官方，国内访问不通。
+    </div>
+
+    <div class="substep">
+        <b>4. 添加 GPT 连接</b><br>
+        点「OpenAI API」右侧的 <b>+</b> 号，按下表填写：
+        <table style="margin-top: 10px; margin-bottom: 10px;">
+            <tr><th>字段</th><th>填什么</th></tr>
+            <tr><td>URL</td><td><code>http://drivers-ai.com/v1</code></td></tr>
+            <tr><td>Auth</td><td><b>Bearer</b></td></tr>
+            <tr><td>API Key</td><td>你的 <b>GPT key</b>（openai-default 组）</td></tr>
+            <tr><td>Provider</td><td>Default</td></tr>
+            <tr><td>API Type</td><td>Chat Completions</td></tr>
+            <tr><td>Model IDs</td><td>留空（自动获取所有模型）</td></tr>
+        </table>
+        点 <b>Save / 保存</b>。
+    </div>
+
+    <div class="substep">
+        <b>5. 添加 Claude 连接</b><br>
+        再次点 <b>+</b> 号，再加一条连接，字段同上，只把 <b>API Key</b> 换成你的 <b>Claude key</b>（anthropic-default 组）。<br>
+        保存后，<b>外部连接列表里应该有 2 条</b>，URL 都是 <code>http://drivers-ai.com/v1</code>，使用的 Key 不同。
+    </div>
+
+    <div class="substep">
+        <b>6. 强制刷新页面</b><br>
+        按 <code>Ctrl + Shift + R</code> 强制刷新（清缓存）。
+    </div>
+
+    <h4>③ 开始聊天</h4>
+
+    <div class="substep">
+        <b>选择模型</b><br>
+        回到聊天主页，点顶部的「<b>Select a model</b>」下拉框，应该能看到一长串模型：
+        <ul style="margin: 10px 0 0 20px;">
+            <li>Claude 系列：<code>claude-sonnet-4-5</code>、<code>claude-opus-4-7</code> 等</li>
+            <li>GPT 系列：<code>gpt-5.5</code>、<code>gpt-5.4</code>、<code>gpt-5.3-codex</code> 等</li>
+        </ul>
+        选一个，开始对话。
+    </div>
+
+    <div class="tip-box">
+        💡 <b>提示</b>：可以同时选多个模型，让它们并行回答同一个问题进行对比。点击模型下拉框最右边的 <b>+</b> 即可添加并行模型。
+    </div>
+
+    <h4>常见问题</h4>
+
+    <h4>Q：注册后看不到任何模型？</h4>
+    <p>需要按步骤②配置 API 连接。普通用户注册后<b>没有管理员权限</b>，看不到 Admin Panel——只有<b>第一个注册的账号</b>是管理员。如果你是普通用户，联系管理员（杨逸）帮你配置。</p>
+
+    <h4>Q：选了模型聊天报错？</h4>
+    <p>① 检查 API Key 是否在 Drivers AI 后台正确创建；② 检查 Key 对应的分组是否匹配（GPT 类模型必须用 openai-default 组的 Key，Claude 必须用 anthropic-default 组的 Key）；③ 试试别的模型。</p>
 
     <h4>Q：drivers-ai.com 打开很慢？</h4>
     <p>服务器在美国弗吉尼亚，国内访问延迟 200-300ms，正常现象。代码调用不影响速度，只是网页慢。</p>
