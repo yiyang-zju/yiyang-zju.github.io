@@ -111,20 +111,30 @@
 
         /* 「返回目录」按钮 */
         .back-to-toc {
-            display: none;
-            margin-bottom: 20px;
-            padding: 10px 18px;
-            background: #f59e0b;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+    display: none;
+    margin-bottom: 30px;
+    padding: 16px 32px;
+    background: #f59e0b;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    transition: all 0.2s;
+}
 
-        .back-to-toc:hover {
-            background: #d97706;
-        }
+.back-to-toc:hover {
+    background: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+.back-to-toc i {
+    margin-right: 8px;
+    font-size: 16px;
+}
 
         /* 章节默认隐藏 */
         .step-section {
@@ -281,6 +291,7 @@
             <a class="toc-item" onclick="showSection('part5')"><span class="num">5</span>Codex 部署</a>
             <a class="toc-item" onclick="showSection('part6')"><span class="num">6</span>Codex 实战使用</a>
             <a class="toc-item" onclick="showSection('part7')"><span class="num">7</span>常见问题</a>
+            <a class="toc-item" onclick="showSection('part8')"><span class="num">8</span>使用 Drivers AI 中转站（推荐）</a>
         </div>
     </div>
 
@@ -449,7 +460,7 @@ cd claude-skill
 git clone https://github.com/anthropics/skills.git anthropic-skills</code></pre>
 
         <div class="tip-box">
-            💡 如果出现 SSL 网络错误，先给 git 配置代理：<br>
+            💡 如果出现 SSL 网络错误，先给 git 配置代理（此处仅举例，具体要改成http...后你的代理地址，可咨询ai来修改）：<br>
             <code>git config --global http.proxy http://127.0.0.1:10808</code><br>
             <code>git config --global https.proxy http://127.0.0.1:10808</code>
         </div>
@@ -559,7 +570,7 @@ base_url = "https://api.zchat.tech/v1"</code></pre>
     <div class="step-section" id="part7">
         <div class="step-header">
             <span class="step-number">7</span>
-            <h2 class="step-title">常见问题</h2>
+            <h2 class="step-title">常见问题（本地部署）</h2>
         </div>
 
         <h3>Q: 出现 403 Forbidden 错误怎么办？</h3>
@@ -576,6 +587,96 @@ $env:https_proxy="http://127.0.0.1:10808"</code></pre>
         <h3>Q: 如何卸载 Claude Code？</h3>
         <p>打开「设置 → 应用 → 已安装的应用」，搜索"Claude Code"卸载即可。</p>
     </div>
+
+    <!-- 章节 8 -->
+<div class="step-section" id="part8">
+    <div class="step-header">
+        <span class="step-number">8</span>
+        <h2 class="step-title">使用 Drivers AI 中转站（推荐）</h2>
+    </div>
+
+    <p>
+        <b>Drivers AI</b>（<a href="http://drivers-ai.com">drivers-ai.com</a>）是杨逸自建的 AI 接口中转平台，
+        把 Claude Pro、ChatGPT Plus 等订阅打包成 API，朋友拼车共享，国内直连，无需挂梯子。
+    </p>
+
+    <div class="tip-box">
+        💡 <b>核心优势</b>：① 国内访问无需翻墙；② 一个 Key 同时调 Claude 和 GPT；③ 朋友拼车，月费分摊；④ 支持 Claude Code、Codex、LobeChat 等所有主流客户端。
+    </div>
+
+    <h3>步骤一：注册账号</h3>
+    <p>浏览器打开 <a href="http://drivers-ai.com">http://drivers-ai.com</a> → 点「注册」→ 填邮箱密码 → 完成。</p>
+
+    <h3>步骤二：创建 API 密钥</h3>
+    <p>登录后左侧菜单 → <b>API 密钥</b> → 点「创建」：</p>
+    <table>
+        <tr><th>字段</th><th>填什么</th></tr>
+        <tr><td>名称</td><td>自定义，如 <code>my-key</code></td></tr>
+        <tr><td>分组</td><td>用 Claude 选 <b>anthropic-default</b><br>用 GPT 选 <b>openai-default</b></td></tr>
+        <tr><td>其他</td><td>默认即可</td></tr>
+    </table>
+    <p>创建成功后会显示 <code>sk-xxx</code> 密钥，<b>立刻复制保存</b>，关闭后看不到完整 Key。</p>
+
+    <h3>步骤三：Claude Code 配置（接入 Claude）</h3>
+    <p>打开 PowerShell，运行（替换成你的 sk-xxx）：</p>
+    <pre><code>$env:ANTHROPIC_BASE_URL="http://drivers-ai.com"
+$env:ANTHROPIC_AUTH_TOKEN="sk-你的claude-key"
+$env:CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC="1"
+claude</code></pre>
+
+    <div class="warning-box">
+        ⚠️ PowerShell 必须用 <code>$env:</code> 语法，不能用 <code>set</code>（那是 CMD 的语法）。
+    </div>
+
+    <h3>步骤四：Codex 配置（接入 GPT）</h3>
+    <p>按 <code>Win + R</code> → 输入 <code>%userprofile%\.codex</code> → 进入配置目录（不存在则手动新建）。</p>
+
+    <p>在该目录创建 <code>config.toml</code> 文件：</p>
+    <pre><code>model_provider = "OpenAI"
+model = "gpt-5.5"
+review_model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+disable_response_storage = true
+network_access = "enabled"
+windows_wsl_setup_acknowledged = true
+
+[model_providers.OpenAI]
+name = "OpenAI"
+base_url = "http://drivers-ai.com"
+wire_api = "responses"
+requires_openai_auth = true
+
+[features]
+goals = true</code></pre>
+
+    <p>同目录创建 <code>auth.json</code>（替换成你的 GPT 密钥）：</p>
+    <pre><code>{
+  "OPENAI_API_KEY": "sk-你的gpt-key"
+}</code></pre>
+
+    <p>PowerShell 运行：</p>
+    <pre><code>codex</code></pre>
+
+    <h3>步骤五：网页直接聊天（最省事）</h3>
+    <p>不想配命令行？直接用网页版：</p>
+    <p><a href="http://chat.drivers-ai.com">http://chat.drivers-ai.com</a></p>
+    <p>输入访问密码 <code>drivers2026</code> 进入，自带 Claude + GPT 切换。</p>
+
+    <div class="tip-box">
+        💡 <b>使用建议</b>：日常聊天用网页版，写代码用 Claude Code，自动化任务用 Codex。
+    </div>
+
+    <h3>常见问题</h3>
+
+    <h4>Q：drivers-ai.com 打开很慢？</h4>
+    <p>服务器在美国弗吉尼亚，国内访问延迟 200-300ms，正常现象。代码调用不影响速度，只是网页慢。</p>
+
+    <h4>Q：用 Claude 中转站时还要不要梯子？</h4>
+    <p>不需要。中转站服务器替你访问 Claude，你只需访问中转站（国内可直连）。</p>
+
+    <h4>Q：额度用完了怎么办？</h4>
+    <p>联系管理员（杨逸）协调，或等下一个 5 小时窗口期自动恢复。</p>
+</div>
 
     <p style="text-align: center; color: #999; margin-top: 60px; font-size: 13px;">
         本教程由 杨逸 整理 · 2026
