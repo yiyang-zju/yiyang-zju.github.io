@@ -874,24 +874,24 @@ goals = true</code></pre>
     <p>这类静态个人网页不需要服务器，也不需要数据库。你只需要浏览器、代码编辑器和 Git。</p>
 
     <h4>Windows 推荐安装</h4>
-    <pre><code># 方式一：官网下载
-https://git-scm.com/downloads/win
-https://code.visualstudio.com/
+    <p>官网下载：</p>
+    <pre><code>https://git-scm.com/downloads/win
+https://code.visualstudio.com/</code></pre>
 
-# 方式二：如果你的 Windows 支持 winget
-winget install --id Git.Git -e
+    <p>如果你的 Windows 支持 winget，也可以直接运行：</p>
+    <pre><code>winget install --id Git.Git -e
 winget install --id Microsoft.VisualStudioCode -e</code></pre>
 
     <h4>Linux / macOS 补充</h4>
-    <pre><code># Ubuntu / Debian
-sudo apt update
-sudo apt install git
+    <p>Ubuntu / Debian：</p>
+    <pre><code>sudo apt update
+sudo apt install git</code></pre>
 
-# macOS：安装 Xcode Command Line Tools
-xcode-select --install
+    <p>macOS 安装 Xcode Command Line Tools：</p>
+    <pre><code>xcode-select --install</code></pre>
 
-# macOS：或使用 Homebrew
-brew install git</code></pre>
+    <p>macOS 如果使用 Homebrew：</p>
+    <pre><code>brew install git</code></pre>
 
     <h3>四、用 AI 生成个人主页前端代码</h3>
     <p>把需求说清楚，比“帮我做一个网站”有效得多。可以先把个人资料整理成清单，再让 AI 输出一个单文件静态页面。</p>
@@ -911,23 +911,23 @@ brew install git</code></pre>
 
     <p>保存文件时建议采用下面的结构。本站就是这种结构：</p>
     <pre><code>my-website/
-  index.html      # 首页
-  course.html     # 课程页
-  1.png           # 头像
-  CNAME           # 自定义域名，后面配置 GitHub Pages 时使用
-  README.md       # 仓库说明</code></pre>
+  index.html
+  course.html
+  1.png
+  CNAME
+  README.md</code></pre>
 
     <h4>本地预览</h4>
     <p>最简单的方法是双击 <code>index.html</code>。如果想模拟真实网站访问，可以开一个本地服务。</p>
-    <pre><code># Windows PowerShell
-cd D:\my-website
-python -m http.server 8000
+    <p>Windows PowerShell：</p>
+    <pre><code>cd D:\my-website
+python -m http.server 8000</code></pre>
 
-# 浏览器打开
-http://localhost:8000</code></pre>
+    <p>浏览器打开：</p>
+    <pre><code>http://localhost:8000</code></pre>
 
-    <pre><code># Linux / macOS
-cd ~/my-website
+    <p>Linux / macOS：</p>
+    <pre><code>cd ~/my-website
 python3 -m http.server 8000</code></pre>
 
     <h3>五、创建 GitHub 仓库</h3>
@@ -948,27 +948,14 @@ python3 -m http.server 8000</code></pre>
     <h3>六、连接 GitHub 仓库并第一次发布</h3>
     <p>下面以 Windows PowerShell 为主。如果你已经在 Git Bash 里，也可以直接使用同样的 Git 命令。</p>
 
-    <pre><code># Windows PowerShell：进入网站目录
-cd D:\my-website
-
-# 初始化 Git 仓库
+    <pre><code>cd D:\my-website
 git init
-
-# 配置用户名和邮箱，只需首次配置
 git config --global user.name "你的名字"
 git config --global user.email "你的邮箱"
-
-# 添加文件并提交
 git add .
 git commit -m "Initial personal website"
-
-# 设置主分支为 main
 git branch -M main
-
-# 连接 GitHub 远端仓库
 git remote add origin https://github.com/&lt;用户名&gt;/&lt;用户名&gt;.github.io.git
-
-# 推送到 GitHub
 git push -u origin main</code></pre>
 
     <h4>Linux / macOS 命令</h4>
@@ -1063,12 +1050,12 @@ git push</code></pre>
     </div>
 
     <h4>4. 检查 DNS 是否生效</h4>
-    <pre><code># Windows PowerShell
-nslookup yiyang-ai.com
-nslookup www.yiyang-ai.com
+    <p>Windows PowerShell：</p>
+    <pre><code>nslookup yiyang-ai.com
+nslookup www.yiyang-ai.com</code></pre>
 
-# Git Bash / Linux / macOS
-dig yiyang-ai.com
+    <p>Git Bash / Linux / macOS：</p>
+    <pre><code>dig yiyang-ai.com
 dig www.yiyang-ai.com</code></pre>
 
     <p>DNS 生效可能需要几分钟到数小时。等 GitHub Pages 页面显示 DNS check successful 后，就可以通过自己的域名访问网站。</p>
@@ -1157,8 +1144,7 @@ Kiro / AWS 后端
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：检查 Docker 是否可用
-docker version
+        <pre><code>docker version
 docker compose version</code></pre>
     </div>
 
@@ -1166,8 +1152,7 @@ docker compose version</code></pre>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># 建议把 Kiro RS 单独放一个目录
-mkdir D:\kiro-rs
+        <pre><code>mkdir D:\kiro-rs
 cd D:\kiro-rs
 mkdir config</code></pre>
     </div>
@@ -1195,8 +1180,7 @@ mkdir config</code></pre>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：生成随机 API Key
-$bytes = New-Object byte[] 24
+        <pre><code>$bytes = New-Object byte[] 24
 $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
 $rng.GetBytes($bytes)
 $rng.Dispose()
@@ -1240,8 +1224,7 @@ $apiKey</code></pre>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：从本机 Kiro SSO 缓存生成 credentials.json
-$src = "$env:USERPROFILE\.aws\sso\cache\kiro-auth-token.json"
+        <pre><code>$src = "$env:USERPROFILE\.aws\sso\cache\kiro-auth-token.json"
 $dst = "D:\kiro-rs\config\credentials.json"
 
 $obj = Get-Content -Raw $src | ConvertFrom-Json
@@ -1263,8 +1246,6 @@ $cred = [ordered]@{
   endpoint     = "ide"
 }
 
-# IdC / AWS Builder ID 登录通常还需要 clientId 和 clientSecret 才能长期刷新 Token。
-# 有些缓存文件只保存 accessToken/refreshToken，另一些缓存文件保存 clientId/clientSecret。
 $cacheDir = "$env:USERPROFILE\.aws\sso\cache"
 $clientCache = Get-ChildItem $cacheDir -Filter "*.json" |
   ForEach-Object {
@@ -1309,8 +1290,7 @@ POST /v1/messages</code></pre>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell
-$apiKey = "YOUR_API_KEY"
+        <pre><code>$apiKey = "YOUR_API_KEY"
 
 Invoke-RestMethod `
   -Uri "http://127.0.0.1:8990/v1/models" `
@@ -1321,8 +1301,7 @@ Invoke-RestMethod `
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：Anthropic Messages 测试
-$apiKey = "YOUR_API_KEY"
+        <pre><code>$apiKey = "YOUR_API_KEY"
 
 $body = @{
   model = "claude-sonnet-4-5-20250929"
@@ -1455,8 +1434,7 @@ Invoke-RestMethod `
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：修复 .claude.json BOM
-$p = "$env:USERPROFILE\.claude.json"
+        <pre><code>$p = "$env:USERPROFILE\.claude.json"
 $bak = "$env:USERPROFILE\.claude.json.bak-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 Copy-Item -LiteralPath $p -Destination $bak
 
@@ -1488,8 +1466,7 @@ node -e "const fs=require('fs'); JSON.parse(fs.readFileSync(process.env.USERPROF
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：查看凭据池是否被禁用
-$adminKey = "YOUR_ADMIN_API_KEY"
+        <pre><code>$adminKey = "YOUR_ADMIN_API_KEY"
 
 Invoke-RestMethod `
   -Uri "http://127.0.0.1:8990/api/admin/credentials" `
@@ -1501,8 +1478,7 @@ Invoke-RestMethod `
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：补齐 clientId/clientSecret，修复 Token 刷新失败
-$credPath = "D:\kiro-rs\config\credentials.json"
+        <pre><code>$credPath = "D:\kiro-rs\config\credentials.json"
 $cacheDir = "$env:USERPROFILE\.aws\sso\cache"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 
@@ -1535,8 +1511,7 @@ docker compose restart kiro-rs</code></pre>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
-        <pre><code># Windows PowerShell：验证 /v1/messages 是否恢复
-$apiKey = "YOUR_API_KEY"
+        <pre><code>$apiKey = "YOUR_API_KEY"
 
 $body = @{
   model = "claude-sonnet-4-5-20250929"
@@ -1564,19 +1539,27 @@ Invoke-RestMethod `
     <p>可以，但前提是你的 sub2api 支持 <b>Anthropic / Claude Compatible</b> 上游。Base URL 填 <code>http://127.0.0.1:8990</code> 或 <code>http://127.0.0.1:8990/v1</code>，取决于它是否会自动拼接 <code>/v1/messages</code>。</p>
 
     <h4>Q：如何停止或重启服务？</h4>
+    <p>停止服务：</p>
 
     <div class="copy-block">
         <button class="copy-btn" onclick="copyCode(this)">复制</button>
         <pre><code>cd D:\kiro-rs
+docker compose down</code></pre>
+    </div>
 
-# 停止
-docker compose down
+    <p>重启服务：</p>
 
-# 重启
-docker compose up -d
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>cd D:\kiro-rs
+docker compose up -d</code></pre>
+    </div>
 
-# 查看日志
-docker logs -f kiro-rs</code></pre>
+    <p>查看实时日志：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>docker logs -f kiro-rs</code></pre>
     </div>
 </div>
 
@@ -1620,7 +1603,7 @@ docker logs -f kiro-rs</code></pre>
         }
 
         function copyCode(button) {
-            const code = button.parentElement.querySelector('code').innerText;
+            const code = button.parentElement.querySelector('code').textContent.trim();
             navigator.clipboard.writeText(code).then(() => {
                 const oldText = button.innerText;
                 button.innerText = '已复制';
