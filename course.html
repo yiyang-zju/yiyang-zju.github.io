@@ -304,8 +304,9 @@
             <a class="toc-item" onclick="showSection('part4')"><span class="num">4</span>Claude Code Skills 安装与使用</a>
             <a class="toc-item" onclick="showSection('part5')"><span class="num">5</span>Codex 部署</a>
             <a class="toc-item" onclick="showSection('part6')"><span class="num">6</span>Codex 实战使用</a>
-            <a class="toc-item" onclick="showSection('part7')"><span class="num">7</span>常见问题</a>
-            <a class="toc-item" onclick="showSection('part8')"><span class="num">8</span>使用 Drivers AI 中转站（推荐）</a>
+            <a class="toc-item" onclick="showSection('part7')"><span class="num">7</span>个人网页制作</a>
+            <a class="toc-item" onclick="showSection('part8')"><span class="num">8</span>常见问题</a>
+            <a class="toc-item" onclick="showSection('part9')"><span class="num">9</span>使用 Drivers AI 中转站（推荐）</a>
         </div>
     </div>
 
@@ -580,10 +581,10 @@ base_url = "https://api.zchat.tech/v1"</code></pre>
         </div>
     </div>
 
-    <!-- 章节 7 -->
-    <div class="step-section" id="part7">
+    <!-- 章节 8 -->
+    <div class="step-section" id="part8">
         <div class="step-header">
-            <span class="step-number">7</span>
+            <span class="step-number">8</span>
             <h2 class="step-title">常见问题（本地部署）</h2>
         </div>
 
@@ -602,10 +603,10 @@ $env:https_proxy="http://127.0.0.1:10808"</code></pre>
         <p>打开「设置 → 应用 → 已安装的应用」，搜索"Claude Code"卸载即可。</p>
     </div>
 
-    <!-- 章节 8 -->
-<div class="step-section" id="part8">
+    <!-- 章节 9 -->
+<div class="step-section" id="part9">
     <div class="step-header">
-        <span class="step-number">8</span>
+        <span class="step-number">9</span>
         <h2 class="step-title">使用 Drivers AI 中转站（推荐）</h2>
     </div>
 
@@ -763,6 +764,326 @@ goals = true</code></pre>
 
     <h4>Q：额度用完了怎么办？</h4>
     <p>联系管理员（杨逸）协调，或等下一个 5 小时窗口期自动恢复。</p>
+</div>
+
+<!-- 章节 7 -->
+<div class="step-section" id="part7">
+    <div class="step-header">
+        <span class="step-number">7</span>
+        <h2 class="step-title">个人网页制作</h2>
+    </div>
+
+    <p>
+        本章以本站 <code>yiyang-ai.com</code> 为例，带你从购买域名、用 AI 写前端页面、创建 GitHub 仓库、
+        用 Git 更新代码，到把阿里云域名连接到 GitHub Pages。主线以 Windows 为例，Linux/macOS 命令放在每一步后面做补充。
+    </p>
+
+    <div class="tip-box">
+        最终效果：一个静态个人主页，包含头像、姓名、联系方式、研究方向、教育经历、论文、项目经历、获奖，以及一个课程入口。
+        这个网站本身就是用 <code>index.html</code>、<code>course.html</code>、<code>1.png</code>、<code>CNAME</code> 几个文件组成的。
+    </div>
+
+    <h3>一、先确定网页风格</h3>
+    <p>个人网页不要一开始就堆技术，先决定“别人打开第一页时看到什么”。本站采用的是学术个人主页风格：左侧固定个人信息，右侧按模块展示履历。</p>
+
+    <table>
+        <tr>
+            <th>风格方向</th>
+            <th>适合人群</th>
+            <th>页面特征</th>
+            <th>参考入口</th>
+        </tr>
+        <tr>
+            <td>学术主页</td>
+            <td>博士生、教师、科研人员</td>
+            <td>头像、邮箱、Google Scholar、研究方向、论文、经历</td>
+            <td><a href="https://theacademicdesigner.com/2023/winners-of-the-2023-best-personal-academic-websites-contest/" target="_blank">Academic website examples</a></td>
+        </tr>
+        <tr>
+            <td>极简作品集</td>
+            <td>开发者、设计师、自由职业者</td>
+            <td>大留白、项目卡片、清晰按钮、移动端友好</td>
+            <td><a href="https://www.figma.com/resource-library/personal-website-examples/" target="_blank">Figma personal website examples</a></td>
+        </tr>
+        <tr>
+            <td>单页名片</td>
+            <td>课程讲师、创业者、内容创作者</td>
+            <td>一句话介绍、社交链接、课程/服务入口</td>
+            <td><a href="https://onepagelove.com/genre/personal" target="_blank">One Page Love personal sites</a></td>
+        </tr>
+        <tr>
+            <td>视觉型主页</td>
+            <td>摄影、艺术、视觉方向</td>
+            <td>大图、作品墙、强烈色彩、少文字</td>
+            <td><a href="https://www.awwwards.com/websites/portfolio/" target="_blank">Awwwards portfolio inspiration</a></td>
+        </tr>
+    </table>
+
+    <div class="substep">
+        <b>本站界面拆解：</b>左栏负责“我是谁”和“怎么联系我”，右栏负责“我做过什么”。如果你是学生或科研人员，可以直接复用这种结构：
+        <code>个人介绍</code>、<code>Currently Teaching</code>、<code>Research Interests</code>、<code>Education</code>、
+        <code>Publications</code>、<code>Experience</code>、<code>Awards</code>。
+    </div>
+
+    <h3>二、在阿里云创建域名</h3>
+    <p>域名相当于网站地址，例如本站使用 <code>yiyang-ai.com</code>。如果还没有域名，可以在阿里云完成购买和实名认证。</p>
+
+    <ol>
+        <li>打开 <a href="https://wanwang.aliyun.com/domain/" target="_blank">阿里云域名注册</a>，搜索想要的域名。</li>
+        <li>选择后缀，例如 <code>.com</code>、<code>.cn</code>、<code>.net</code>，优先选择短、好记、和自己名字/品牌相关的域名。</li>
+        <li>创建或选择“域名信息模板”，按个人或企业身份填写资料。</li>
+        <li>完成邮箱验证和实名认证。国内域名服务通常需要实名后才能稳定解析和使用。</li>
+        <li>购买成功后，进入“域名控制台”，确认域名状态正常。</li>
+    </ol>
+
+    <div class="warning-box">
+        如果域名没有完成实名认证，可能出现解析失败、域名被锁定或暂时无法访问。先把实名认证状态处理成“认证成功”，再继续配置解析。
+    </div>
+
+    <h3>三、准备 Windows 开发环境</h3>
+    <p>这类静态个人网页不需要服务器，也不需要数据库。你只需要浏览器、代码编辑器和 Git。</p>
+
+    <h4>Windows 推荐安装</h4>
+    <pre><code># 方式一：官网下载
+https://git-scm.com/downloads/win
+https://code.visualstudio.com/
+
+# 方式二：如果你的 Windows 支持 winget
+winget install --id Git.Git -e
+winget install --id Microsoft.VisualStudioCode -e</code></pre>
+
+    <h4>Linux / macOS 补充</h4>
+    <pre><code># Ubuntu / Debian
+sudo apt update
+sudo apt install git
+
+# macOS：安装 Xcode Command Line Tools
+xcode-select --install
+
+# macOS：或使用 Homebrew
+brew install git</code></pre>
+
+    <h3>四、用 AI 生成个人主页前端代码</h3>
+    <p>把需求说清楚，比“帮我做一个网站”有效得多。可以先把个人资料整理成清单，再让 AI 输出一个单文件静态页面。</p>
+
+    <div class="substep">
+        <b>推荐资料清单：</b>姓名、中英文名、头像文件名、邮箱、GitHub、Google Scholar、个人简介、研究方向、教育经历、论文、项目经历、获奖、课程或博客入口。
+    </div>
+
+    <h4>可以直接复制给 AI 的提示词</h4>
+    <pre><code>请帮我写一个单文件个人主页 index.html，要求：
+1. 面向学术/科研个人主页，整体简洁、专业、有一点现代感。
+2. 页面左侧固定栏：头像、姓名、中英文名、邮箱、Google Scholar、GitHub、Blog。
+3. 页面右侧主内容：个人介绍、Currently Teaching、Research Interests、Education、Publications、Patents、Experience、Awards。
+4. 使用纯 HTML + CSS，不使用框架，移动端自适应。
+5. 头像文件名为 1.png，和 index.html 放在同一个目录。
+6. 请给出完整代码，不要省略。</code></pre>
+
+    <p>保存文件时建议采用下面的结构。本站就是这种结构：</p>
+    <pre><code>my-website/
+  index.html      # 首页
+  course.html     # 课程页
+  1.png           # 头像
+  CNAME           # 自定义域名，后面配置 GitHub Pages 时使用
+  README.md       # 仓库说明</code></pre>
+
+    <h4>本地预览</h4>
+    <p>最简单的方法是双击 <code>index.html</code>。如果想模拟真实网站访问，可以开一个本地服务。</p>
+    <pre><code># Windows PowerShell
+cd D:\my-website
+python -m http.server 8000
+
+# 浏览器打开
+http://localhost:8000</code></pre>
+
+    <pre><code># Linux / macOS
+cd ~/my-website
+python3 -m http.server 8000</code></pre>
+
+    <h3>五、创建 GitHub 仓库</h3>
+    <p>个人主页推荐使用 GitHub Pages。最省心的命名方式是：</p>
+    <pre><code>&lt;你的 GitHub 用户名&gt;.github.io</code></pre>
+
+    <p>例如本站仓库是：</p>
+    <pre><code>https://github.com/yiyang-zju/yiyang-zju.github.io.git</code></pre>
+
+    <ol>
+        <li>打开 GitHub，右上角点击 <code>+</code>，选择 <code>New repository</code>。</li>
+        <li>Repository name 填 <code>用户名.github.io</code>，例如 <code>yiyang-zju.github.io</code>。</li>
+        <li>选择 <code>Public</code>。GitHub Pages 免费公开发布通常使用公开仓库最方便。</li>
+        <li>先不要勾选 README、.gitignore、License，避免和本地文件产生冲突。</li>
+        <li>创建后复制仓库 HTTPS 地址。</li>
+    </ol>
+
+    <h3>六、连接 GitHub 仓库并第一次发布</h3>
+    <p>下面以 Windows PowerShell 为主。如果你已经在 Git Bash 里，也可以直接使用同样的 Git 命令。</p>
+
+    <pre><code># Windows PowerShell：进入网站目录
+cd D:\my-website
+
+# 初始化 Git 仓库
+git init
+
+# 配置用户名和邮箱，只需首次配置
+git config --global user.name "你的名字"
+git config --global user.email "你的邮箱"
+
+# 添加文件并提交
+git add .
+git commit -m "Initial personal website"
+
+# 设置主分支为 main
+git branch -M main
+
+# 连接 GitHub 远端仓库
+git remote add origin https://github.com/&lt;用户名&gt;/&lt;用户名&gt;.github.io.git
+
+# 推送到 GitHub
+git push -u origin main</code></pre>
+
+    <h4>Linux / macOS 命令</h4>
+    <pre><code>cd ~/my-website
+git init
+git add .
+git commit -m "Initial personal website"
+git branch -M main
+git remote add origin https://github.com/&lt;用户名&gt;/&lt;用户名&gt;.github.io.git
+git push -u origin main</code></pre>
+
+    <div class="tip-box">
+        以后每次改网页，只需要三步：<code>git add .</code>、<code>git commit -m "更新说明"</code>、<code>git push</code>。
+    </div>
+
+    <h3>七、开启 GitHub Pages</h3>
+    <ol>
+        <li>进入 GitHub 仓库页面。</li>
+        <li>点击 <code>Settings</code>。</li>
+        <li>左侧进入 <code>Pages</code>。</li>
+        <li>Source 选择 <code>Deploy from a branch</code>。</li>
+        <li>Branch 选择 <code>main</code>，目录选择 <code>/(root)</code>，点击保存。</li>
+    </ol>
+
+    <p>稍等几分钟后，默认网址会是：</p>
+    <pre><code>https://&lt;用户名&gt;.github.io</code></pre>
+
+    <h3>八、把阿里云域名连接到 GitHub Pages</h3>
+    <p>这一步分两边做：GitHub 记录你想绑定的域名，阿里云负责把访问请求解析到 GitHub Pages。</p>
+
+    <h4>1. 在项目里创建 CNAME 文件</h4>
+    <p>在网站根目录创建名为 <code>CNAME</code> 的文件，注意文件名全部大写，里面只写一行域名。</p>
+    <pre><code>yiyang-ai.com</code></pre>
+
+    <p>然后提交：</p>
+    <pre><code>git add CNAME
+git commit -m "Add custom domain"
+git push</code></pre>
+
+    <h4>2. 在 GitHub Pages 填写 Custom domain</h4>
+    <ol>
+        <li>仓库页面进入 <code>Settings</code> → <code>Pages</code>。</li>
+        <li>在 <code>Custom domain</code> 填入你的域名，例如 <code>yiyang-ai.com</code>。</li>
+        <li>保存后等待 DNS 检查。</li>
+        <li>检查通过后，勾选 <code>Enforce HTTPS</code>。如果暂时不能勾选，等 DNS 生效后再回来开。</li>
+    </ol>
+
+    <h4>3. 在阿里云云解析 DNS 添加记录</h4>
+    <p>进入阿里云控制台 → 云解析 DNS → 找到你的域名 → 解析设置 → 添加记录。</p>
+
+    <table>
+        <tr>
+            <th>目标</th>
+            <th>记录类型</th>
+            <th>主机记录</th>
+            <th>记录值</th>
+        </tr>
+        <tr>
+            <td>根域名，例如 <code>yiyang-ai.com</code></td>
+            <td>A</td>
+            <td>@</td>
+            <td><code>185.199.108.153</code></td>
+        </tr>
+        <tr>
+            <td>根域名，例如 <code>yiyang-ai.com</code></td>
+            <td>A</td>
+            <td>@</td>
+            <td><code>185.199.109.153</code></td>
+        </tr>
+        <tr>
+            <td>根域名，例如 <code>yiyang-ai.com</code></td>
+            <td>A</td>
+            <td>@</td>
+            <td><code>185.199.110.153</code></td>
+        </tr>
+        <tr>
+            <td>根域名，例如 <code>yiyang-ai.com</code></td>
+            <td>A</td>
+            <td>@</td>
+            <td><code>185.199.111.153</code></td>
+        </tr>
+        <tr>
+            <td>www 子域名，例如 <code>www.yiyang-ai.com</code></td>
+            <td>CNAME</td>
+            <td>www</td>
+            <td><code>&lt;用户名&gt;.github.io</code></td>
+        </tr>
+    </table>
+
+    <div class="warning-box">
+        不要使用 <code>*.example.com</code> 这种通配符解析。GitHub 官方不推荐这样做，因为它会增加子域名被接管的风险。
+    </div>
+
+    <h4>4. 检查 DNS 是否生效</h4>
+    <pre><code># Windows PowerShell
+nslookup yiyang-ai.com
+nslookup www.yiyang-ai.com
+
+# Git Bash / Linux / macOS
+dig yiyang-ai.com
+dig www.yiyang-ai.com</code></pre>
+
+    <p>DNS 生效可能需要几分钟到数小时。等 GitHub Pages 页面显示 DNS check successful 后，就可以通过自己的域名访问网站。</p>
+
+    <h3>九、以后如何更新网页</h3>
+    <p>例如你修改了 <code>index.html</code> 的论文、经历或照片，只需要：</p>
+    <pre><code>cd D:\my-website
+git status
+git add index.html
+git commit -m "Update profile page"
+git push</code></pre>
+
+    <p>如果同时改了课程页和头像：</p>
+    <pre><code>git add index.html course.html 1.png
+git commit -m "Update personal website content"
+git push</code></pre>
+
+    <h3>十、常见问题</h3>
+    <h4>Q：浏览器打开还是旧页面？</h4>
+    <p>先强制刷新 <code>Ctrl + F5</code>。GitHub Pages 部署也可能有短暂延迟，等 1-3 分钟再看。</p>
+
+    <h4>Q：GitHub Pages 显示 404？</h4>
+    <p>确认仓库根目录里有 <code>index.html</code>，Pages 的 branch 是 <code>main</code>，目录是 <code>/(root)</code>。</p>
+
+    <h4>Q：自定义域名无法访问？</h4>
+    <p>检查三件事：<code>CNAME</code> 文件是否存在且只有一行域名；GitHub Pages 的 Custom domain 是否保存成功；阿里云解析记录是否填对。</p>
+
+    <h4>Q：我已经有仓库了，提示 remote origin already exists？</h4>
+    <pre><code>git remote -v
+git remote set-url origin https://github.com/&lt;用户名&gt;/&lt;仓库名&gt;.git
+git push -u origin main</code></pre>
+
+    <h4>Q：要不要备案？</h4>
+    <p>如果只是把域名解析到 GitHub Pages，通常不涉及阿里云国内服务器备案流程。但如果你把网站部署到中国内地服务器，通常需要按服务商要求完成备案。</p>
+
+    <h3>参考资料</h3>
+    <ul>
+        <li><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site" target="_blank">GitHub Pages 自定义域名官方文档</a></li>
+        <li><a href="https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/troubleshooting-custom-domains-and-github-pages" target="_blank">GitHub Pages 自定义域名排错</a></li>
+        <li><a href="https://docs.github.com/en/migrations/importing-source-code/using-the-command-line-to-import-source-code/adding-locally-hosted-code-to-github" target="_blank">GitHub：把本地代码添加到 GitHub</a></li>
+        <li><a href="https://help.aliyun.com/zh/dns/pubz-add-parsing-record" target="_blank">阿里云云解析 DNS：添加解析记录</a></li>
+        <li><a href="https://wanwang.aliyun.com/domain/" target="_blank">阿里云域名注册入口</a></li>
+        <li><a href="https://onepagelove.com/genre/personal" target="_blank">One Page Love：个人网站设计参考</a></li>
+        <li><a href="https://www.figma.com/resource-library/personal-website-examples/" target="_blank">Figma：个人网站案例与模板</a></li>
+    </ul>
 </div>
 
     <p style="text-align: center; color: #999; margin-top: 60px; font-size: 13px;">
