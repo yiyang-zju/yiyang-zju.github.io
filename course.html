@@ -281,6 +281,35 @@
         .substep b {
             color: #059669;
         }
+
+        .copy-block {
+            position: relative;
+            margin: 18px 0;
+        }
+
+        .copy-block pre {
+            margin: 0;
+            padding-top: 44px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #f59e0b;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 6px 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        .copy-btn:hover {
+            background: #d97706;
+        }
     </style>
 </head>
 <body>
@@ -307,6 +336,7 @@
             <a class="toc-item" onclick="showSection('part7')"><span class="num">7</span>个人网页制作</a>
             <a class="toc-item" onclick="showSection('part8')"><span class="num">8</span>常见问题</a>
             <a class="toc-item" onclick="showSection('part9')"><span class="num">9</span>使用 Drivers AI 中转站（推荐）</a>
+            <a class="toc-item" onclick="showSection('part10')"><span class="num">10</span>Kiro RS 反代 Claude Code</a>
         </div>
     </div>
 
@@ -1086,6 +1116,378 @@ git push -u origin main</code></pre>
     </ul>
 </div>
 
+<!-- 章节 10 -->
+<div class="step-section" id="part10">
+    <div class="step-header">
+        <span class="step-number">10</span>
+        <h2 class="step-title">Kiro RS 反代 Claude Code</h2>
+    </div>
+
+    <p>
+        本章记录一次完整的 <b>Kiro RS 反代 Claude Code</b> 实战：用
+        <a href="https://github.com/hank9999/kiro.rs" target="_blank">hank9999/kiro.rs</a>
+        把 Kiro 的后端能力包装成 <b>Anthropic Messages 兼容接口</b>，再接入 Claude Code 或 ccswitch。
+    </p>
+
+    <div class="warning-box">
+        <b>安全提醒：</b>不要把真实账号密码、API Key、refreshToken 或 <code>credentials.json</code> 发到公开网站、GitHub 仓库、群聊或截图里。
+        本教程中的密钥均用占位符表示，实际部署时请只保存在本机或自己的服务器。
+    </div>
+
+    <h3>一、先理解技术路线</h3>
+    <p>这套方案不是普通网页反向代理，而是一个 <b>协议转换代理</b>：</p>
+
+    <pre><code>Claude Code / ccswitch
+        ↓
+Kiro RS 本地服务
+        ↓
+Kiro OAuth 凭据池 credentials.json
+        ↓
+Kiro / AWS 后端
+        ↓
+返回 Anthropic Messages 格式结果</code></pre>
+
+    <div class="tip-box">
+        <b>关键区别：</b>Kiro RS 暴露的是 <code>/v1/messages</code>，属于 <b>Claude / Anthropic 原生协议</b>。
+        它不是 OpenAI 的 <code>/v1/chat/completions</code>。如果你的中转站只支持 OpenAI 协议，应优先用 AIClient-2-API；如果支持 Claude 协议，Kiro RS 更轻量。
+    </div>
+
+    <h3>二、准备环境</h3>
+    <p>Windows 推荐使用 Docker Desktop 部署，这样不用手动编译 Rust 项目。</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell：检查 Docker 是否可用
+docker version
+docker compose version</code></pre>
+    </div>
+
+    <p>创建运行目录：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># 建议把 Kiro RS 单独放一个目录
+mkdir D:\kiro-rs
+cd D:\kiro-rs
+mkdir config</code></pre>
+    </div>
+
+    <h3>三、编写 Docker Compose</h3>
+    <p>在 <code>D:\kiro-rs</code> 下创建 <code>docker-compose.yml</code>：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>services:
+  kiro-rs:
+    image: ghcr.io/hank9999/kiro-rs:latest
+    container_name: kiro-rs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8990:8990"
+    volumes:
+      - ./config/:/app/config/
+    restart: unless-stopped</code></pre>
+    </div>
+
+    <h3>四、生成服务 API Key</h3>
+    <p>这个 Key 是客户端访问你本地 Kiro RS 的认证密钥，不是 Kiro 账号密码。</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell：生成随机 API Key
+$bytes = New-Object byte[] 24
+$rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+$rng.Dispose()
+$apiKey = "sk-kiro-rs-" + ([System.BitConverter]::ToString($bytes)).Replace("-", "").ToLower()
+$apiKey</code></pre>
+    </div>
+
+    <h3>五、创建 config.json</h3>
+    <p>在 <code>D:\kiro-rs\config</code> 下创建 <code>config.json</code>。把下面的 <code>YOUR_API_KEY</code> 换成上一步生成的 Key。</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>{
+  "host": "0.0.0.0",
+  "port": 8990,
+  "apiKey": "YOUR_API_KEY",
+  "adminApiKey": "YOUR_ADMIN_KEY",
+  "region": "us-east-1",
+  "authRegion": "eu-north-1",
+  "apiRegion": "us-east-1",
+  "tlsBackend": "native-tls",
+  "loadBalancingMode": "balanced",
+  "defaultEndpoint": "ide",
+  "extractThinking": true
+}</code></pre>
+    </div>
+
+    <div class="tip-box">
+        <b>为什么用 <code>native-tls</code>？</b>部分 Windows 环境或代理环境下，Rust 默认 TLS 后端可能刷新 token 失败。
+        切到 <code>native-tls</code> 通常更稳。
+    </div>
+
+    <h3>六、准备 Kiro 凭据 credentials.json</h3>
+    <p>Kiro RS 需要 <code>credentials.json</code>。它里面保存的是 OAuth 凭据，例如 <code>refreshToken</code>，不是你的账号密码。</p>
+
+    <p>如果你已经通过 Kiro IDE 或 AIClient-2-API 授权过，本机通常会有：</p>
+
+    <pre><code>C:\Users\你的用户名\.aws\sso\cache\kiro-auth-token.json</code></pre>
+
+    <p>可以用下面的命令把它转换成 Kiro RS 需要的格式：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell：从本机 Kiro SSO 缓存生成 credentials.json
+$src = "$env:USERPROFILE\.aws\sso\cache\kiro-auth-token.json"
+$dst = "D:\kiro-rs\config\credentials.json"
+
+$obj = Get-Content -Raw $src | ConvertFrom-Json
+$reg = $obj.region
+if ([string]::IsNullOrWhiteSpace($reg)) { $reg = "us-east-1" }
+
+$method = $obj.authMethod
+if ([string]::IsNullOrWhiteSpace($method)) { $method = "social" }
+
+$cred = [ordered]@{
+  accessToken  = $obj.accessToken
+  refreshToken = $obj.refreshToken
+  expiresAt    = $obj.expiresAt
+  authMethod   = $method
+  region       = $reg
+  authRegion   = $reg
+  apiRegion    = "us-east-1"
+  priority     = 0
+  endpoint     = "ide"
+}
+
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($dst, ((@($cred)) | ConvertTo-Json -Depth 5), $utf8NoBom)</code></pre>
+    </div>
+
+    <div class="warning-box">
+        <b>不要公开 credentials.json。</b>它等价于你的 Kiro 授权凭据。GitHub Pages、公开仓库、课程网页里都不应该出现真实 token。
+    </div>
+
+    <h3>七、启动 Kiro RS</h3>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>cd D:\kiro-rs
+docker compose up -d
+docker ps --filter name=kiro-rs
+docker logs --tail 50 kiro-rs</code></pre>
+    </div>
+
+    <p>日志里看到下面这类信息，说明服务已经起来：</p>
+
+    <pre><code>已加载 1 个凭据配置
+启动 Anthropic API 端点: 0.0.0.0:8990
+GET  /v1/models
+POST /v1/messages</code></pre>
+
+    <h3>八、测试接口是否可用</h3>
+    <p>先测模型列表：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell
+$apiKey = "YOUR_API_KEY"
+
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8990/v1/models" `
+  -Headers @{ "x-api-key" = $apiKey }</code></pre>
+    </div>
+
+    <p>再测真实对话：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell：Anthropic Messages 测试
+$apiKey = "YOUR_API_KEY"
+
+$body = @{
+  model = "claude-sonnet-4-5-20250929"
+  max_tokens = 128
+  stream = $false
+  messages = @(
+    @{
+      role = "user"
+      content = "Say OK in English only."
+    }
+  )
+} | ConvertTo-Json -Depth 8
+
+Invoke-RestMethod `
+  -Uri "http://127.0.0.1:8990/v1/messages" `
+  -Method Post `
+  -Headers @{
+    "Content-Type" = "application/json"
+    "x-api-key" = $apiKey
+  } `
+  -Body $body</code></pre>
+    </div>
+
+    <p>如果返回类似下面的内容，就说明反代成功：</p>
+
+    <pre><code>{
+  "role": "assistant",
+  "content": [
+    {
+      "type": "text",
+      "text": "OK"
+    }
+  ]
+}</code></pre>
+
+    <h3>九、接入 ccswitch / Claude Code</h3>
+    <p>在 ccswitch 中新增 Claude 供应商时，重点是：<b>请求地址填基地址，不要填到 /v1/messages</b>。</p>
+
+    <table>
+        <tr>
+            <th>配置项</th>
+            <th>推荐填写</th>
+        </tr>
+        <tr>
+            <td>供应商名称</td>
+            <td><code>Kiro RS</code></td>
+        </tr>
+        <tr>
+            <td>官网链接</td>
+            <td><code>http://127.0.0.1:8990</code></td>
+        </tr>
+        <tr>
+            <td>请求地址</td>
+            <td><code>http://127.0.0.1:8990</code></td>
+        </tr>
+        <tr>
+            <td>API 格式</td>
+            <td><b>Anthropic Messages（原生）</b></td>
+        </tr>
+        <tr>
+            <td>认证字段</td>
+            <td><code>ANTHROPIC_AUTH_TOKEN</code></td>
+        </tr>
+        <tr>
+            <td>API Key</td>
+            <td>填你自己的 <code>sk-kiro-rs-...</code></td>
+        </tr>
+    </table>
+
+    <p>配置 JSON 可以写成：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>{
+  "env": {
+    "ANTHROPIC_AUTH_TOKEN": "YOUR_API_KEY",
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8990"
+  }
+}</code></pre>
+    </div>
+
+    <p>模型映射建议：</p>
+
+    <table>
+        <tr>
+            <th>映射项</th>
+            <th>模型名</th>
+        </tr>
+        <tr>
+            <td>主模型</td>
+            <td><code>claude-sonnet-4-5-20250929</code></td>
+        </tr>
+        <tr>
+            <td>推理模型 Thinking</td>
+            <td><code>claude-sonnet-4-5-20250929-thinking</code></td>
+        </tr>
+        <tr>
+            <td>Haiku 默认模型</td>
+            <td><code>claude-haiku-4-5-20251001</code></td>
+        </tr>
+        <tr>
+            <td>Sonnet 默认模型</td>
+            <td><code>claude-sonnet-4-5-20250929</code></td>
+        </tr>
+        <tr>
+            <td>Opus 默认模型</td>
+            <td><code>claude-opus-4-5-20251101</code></td>
+        </tr>
+    </table>
+
+    <h3>十、Claude Code 验证</h3>
+    <p>保存并启用供应商后，打开命令行测试 Claude Code：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>claude</code></pre>
+    </div>
+
+    <p>进入 Claude Code 后可以输入：</p>
+
+    <pre><code>你好
+帮我检查一下当前电脑配置</code></pre>
+
+    <p>实测成功时，Claude Code 会正常执行命令，例如读取 Windows 系统信息、CPU、内存、磁盘信息，并返回分析结果。</p>
+
+    <h3>十一、常见问题</h3>
+
+    <h4>Q：ccswitch 启用时报 <code>.claude.json expected value at line 1 column 1</code>？</h4>
+    <p>这通常是 <code>C:\Users\你的用户名\.claude.json</code> 文件开头带 UTF-8 BOM，部分 JSON 解析器不能识别。可以备份后重写为无 BOM UTF-8。</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code># Windows PowerShell：修复 .claude.json BOM
+$p = "$env:USERPROFILE\.claude.json"
+$bak = "$env:USERPROFILE\.claude.json.bak-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+Copy-Item -LiteralPath $p -Destination $bak
+
+$text = [System.IO.File]::ReadAllText($p, [System.Text.Encoding]::UTF8)
+if ($text.Length -gt 0 -and $text[0] -eq [char]0xFEFF) {
+  $text = $text.Substring(1)
+}
+
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText($p, $text, $utf8NoBom)
+
+node -e "const fs=require('fs'); JSON.parse(fs.readFileSync(process.env.USERPROFILE+'/.claude.json','utf8')); console.log('JSON OK')"</code></pre>
+    </div>
+
+    <h4>Q：模型列表能返回，但对话失败？</h4>
+    <p>优先检查 <code>credentials.json</code> 是否加载成功。运行：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>docker logs --tail 80 kiro-rs</code></pre>
+    </div>
+
+    <p>如果看到 <code>已加载 0 个凭据配置</code>，说明还没有有效 Kiro 凭据；如果看到 <code>已加载 1 个凭据配置</code>，说明凭据池已经识别。</p>
+
+    <h4>Q：ccswitch 里请求地址应该填什么？</h4>
+    <p><b>填 <code>http://127.0.0.1:8990</code>，不要填 <code>/v1/messages</code>。</b>ccswitch 会自己拼接 Claude API 路径。</p>
+
+    <h4>Q：可以接入 sub2api 吗？</h4>
+    <p>可以，但前提是你的 sub2api 支持 <b>Anthropic / Claude Compatible</b> 上游。Base URL 填 <code>http://127.0.0.1:8990</code> 或 <code>http://127.0.0.1:8990/v1</code>，取决于它是否会自动拼接 <code>/v1/messages</code>。</p>
+
+    <h4>Q：如何停止或重启服务？</h4>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>cd D:\kiro-rs
+
+# 停止
+docker compose down
+
+# 重启
+docker compose up -d
+
+# 查看日志
+docker logs -f kiro-rs</code></pre>
+    </div>
+</div>
+
     <p style="text-align: center; color: #999; margin-top: 60px; font-size: 13px;">
         本教程由 杨逸 整理 · 2026
     </p>
@@ -1123,6 +1525,17 @@ git push -u origin main</code></pre>
 
             // 滚动到顶部
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function copyCode(button) {
+            const code = button.parentElement.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const oldText = button.innerText;
+                button.innerText = '已复制';
+                setTimeout(() => {
+                    button.innerText = oldText;
+                }, 1200);
+            });
         }
     </script>
 
