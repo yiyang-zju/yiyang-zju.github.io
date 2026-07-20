@@ -74,6 +74,61 @@
             margin-bottom: 25px;
         }
 
+        .api-directory-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin: 0 0 24px 0;
+            padding: 22px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: white;
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 55%, #f97316 100%);
+            box-shadow: 0 12px 26px rgba(15, 118, 110, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .api-directory-banner:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 16px 34px rgba(15, 118, 110, 0.32);
+        }
+
+        .api-directory-banner .eyebrow {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            opacity: 0.86;
+        }
+
+        .api-directory-banner .headline {
+            display: block;
+            margin-top: 4px;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .api-directory-banner .summary {
+            display: block;
+            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .api-directory-banner .open-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
         .toc-item {
             display: block;
             padding: 16px 20px;
@@ -327,6 +382,14 @@
     <div id="toc-area">
         <div class="toc-card">
             <h3>📚 课程目录</h3>
+            <a class="api-directory-banner" href="https://www.zuiquanapi.com/" target="_blank" rel="noopener noreferrer">
+                <span>
+                    <span class="eyebrow">AI API DIRECTORY</span>
+                    <span class="headline">最全 API 中转站导航</span>
+                    <span class="summary">快速查看 Claude、OpenAI、Gemini、Kimi 等中转站信息，适合作为课程实践时的参考入口。</span>
+                </span>
+                <span class="open-icon"><i class="fas fa-arrow-up-right-from-square"></i></span>
+            </a>
             <a class="toc-item" onclick="showSection('part1')"><span class="num">1</span>国内外主流 AI 模型简介</a>
             <a class="toc-item" onclick="showSection('part2')"><span class="num">2</span>Claude Code 部署</a>
             <a class="toc-item" onclick="showSection('part3')"><span class="num">3</span>Claude Code 实战使用</a>
