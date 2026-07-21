@@ -1262,7 +1262,7 @@ $apiKey</code></pre>
   "apiKey": "YOUR_API_KEY",
   "adminApiKey": "YOUR_ADMIN_KEY",
   "region": "us-east-1",
-  "authRegion": "eu-north-1",
+  "authRegion": "us-east-1",
   "apiRegion": "us-east-1",
   "tlsBackend": "native-tls",
   "loadBalancingMode": "balanced",
@@ -1272,8 +1272,10 @@ $apiKey</code></pre>
     </div>
 
     <div class="tip-box">
-        <b>为什么用 <code>native-tls</code>？</b>部分 Windows 环境或代理环境下，Rust 默认 TLS 后端可能刷新 token 失败。
-        切到 <code>native-tls</code> 通常更稳。
+        <b>经验提醒：</b><code>authRegion</code> 必须和账号凭据的刷新区域匹配。很多 Kiro Account Manager / Kiro IDE 导出的 IdC 凭据实际走 <code>us-east-1</code>。
+        如果填成 <code>eu-north-1</code>，常见现象是模型列表能返回，但真实对话时刷新 token 失败，最后账号被标记为 <code>TooManyRefreshFailures</code>。
+        <br><br>
+        <b>为什么用 <code>native-tls</code>？</b>部分 Windows 环境或代理环境下，Rust 默认 TLS 后端可能刷新 token 失败。切到 <code>native-tls</code> 通常更稳。
     </div>
 
     <h3>六、准备 Kiro 凭据 credentials.json</h3>
@@ -1441,9 +1443,19 @@ Invoke-RestMethod `
         <pre><code>{
   "env": {
     "ANTHROPIC_AUTH_TOKEN": "YOUR_API_KEY",
-    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8990"
+    "ANTHROPIC_BASE_URL": "http://127.0.0.1:8990",
+    "ANTHROPIC_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-sonnet-4-5-20250929",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5-20251001"
   }
 }</code></pre>
+    </div>
+
+    <div class="warning-box">
+        <b>不要让 Claude Code 默认走 Opus。</b>实战中 Kiro RS 的 <code>/v1/models</code> 可能会列出 Opus 或 Sonnet 4.6，
+        但真实请求时上游会返回 <code>INVALID_MODEL_ID</code>。如果 Claude Code 显示 <code>Opus 4.8</code>，很可能会直接报 <code>No available accounts</code>。
+        给 Kiro 分组使用时，建议把 Opus 默认模型也映射到实测可用的 Sonnet 4.5。
     </div>
 
     <p>模型映射建议：</p>
@@ -1471,7 +1483,36 @@ Invoke-RestMethod `
         </tr>
         <tr>
             <td>Opus 默认模型</td>
-            <td><code>claude-opus-4-5-20251101</code></td>
+            <td><code>claude-sonnet-4-5-20250929</code>（作为安全回退）</td>
+        </tr>
+    </table>
+
+    <p>当前实测更稳的 Kiro 模型白名单：</p>
+
+    <table>
+        <tr>
+            <th>模型</th>
+            <th>是否建议开放</th>
+        </tr>
+        <tr>
+            <td><code>claude-sonnet-4-5-20250929</code></td>
+            <td>建议，作为默认主模型</td>
+        </tr>
+        <tr>
+            <td><code>claude-sonnet-4-5-20250929-thinking</code></td>
+            <td>建议，用于需要 thinking 的场景</td>
+        </tr>
+        <tr>
+            <td><code>claude-haiku-4-5-20251001</code></td>
+            <td>建议，轻量任务使用</td>
+        </tr>
+        <tr>
+            <td><code>claude-haiku-4-5-20251001-thinking</code></td>
+            <td>可以开放，低成本 thinking 任务使用</td>
+        </tr>
+        <tr>
+            <td><code>claude-sonnet-4-6</code> / <code>claude-opus-4-6</code> / <code>claude-opus-4-8</code></td>
+            <td>不建议直接开放，容易触发 <code>INVALID_MODEL_ID</code> 或找不到可用账号</td>
         </tr>
     </table>
 
@@ -1490,7 +1531,166 @@ Invoke-RestMethod `
 
     <p>实测成功时，Claude Code 会正常执行命令，例如读取 Windows 系统信息、CPU、内存、磁盘信息，并返回分析结果。</p>
 
-    <h3>十一、常见问题</h3>
+    <h3>十一、海外服务器接入 sub2api 分发</h3>
+
+    <p>
+        如果只是自己本机使用，<code>http://127.0.0.1:8990</code> 就够了。
+        但如果要让 <b>海外服务器上的 sub2api 给其他用户分发</b>，Kiro RS 必须部署在同一台海外服务器上，或者至少能被 sub2api 容器稳定访问。
+    </p>
+
+    <div class="tip-box">
+        <b>核心原则：</b>sub2api 和 Kiro RS 在同一台服务器、同一个 Docker 网络时，sub2api 账号里的 Base URL 应填写
+        <code>http://kiro-rs:8990</code>，不是 <code>127.0.0.1</code>，也不是你本机电脑的地址。
+    </div>
+
+    <p>服务器目录建议：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>mkdir -p /opt/kiro-rs/config
+cd /opt/kiro-rs</code></pre>
+    </div>
+
+    <p>海外服务器上的 <code>docker-compose.yml</code> 可以这样写：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>services:
+  kiro-rs:
+    image: ghcr.io/hank9999/kiro-rs:latest
+    container_name: kiro-rs
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8990:8990"
+    volumes:
+      - ./config:/app/config</code></pre>
+    </div>
+
+    <p>启动后，把 Kiro RS 接入 sub2api 所在 Docker 网络，并设置容器别名：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>SUB2API_NET=$(docker inspect sub2api --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}}{{end}}')
+docker network disconnect "$SUB2API_NET" kiro-rs 2>/dev/null || true
+docker network connect --alias kiro-rs "$SUB2API_NET" kiro-rs</code></pre>
+    </div>
+
+    <p>从 sub2api 网络里验证 Kiro RS 是否可访问：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>API_KEY=$(jq -r .apiKey /opt/kiro-rs/config/config.json)
+docker run --rm --network "$SUB2API_NET" curlimages/curl:latest -sS http://kiro-rs:8990/v1/models -H "x-api-key: $API_KEY"</code></pre>
+    </div>
+
+    <p>在 sub2api 中创建账号时，建议这样填：</p>
+
+    <table>
+        <tr>
+            <th>配置项</th>
+            <th>填写内容</th>
+        </tr>
+        <tr>
+            <td>平台</td>
+            <td><code>Anthropic</code></td>
+        </tr>
+        <tr>
+            <td>账号类型</td>
+            <td><code>API Key</code></td>
+        </tr>
+        <tr>
+            <td>Base URL</td>
+            <td><code>http://kiro-rs:8990</code></td>
+        </tr>
+        <tr>
+            <td>API Key</td>
+            <td><code>/opt/kiro-rs/config/config.json</code> 里的 <code>apiKey</code></td>
+        </tr>
+        <tr>
+            <td>模型限制</td>
+            <td>只选实测可用的 Sonnet 4.5 / Haiku 4.5 四个模型</td>
+        </tr>
+        <tr>
+            <td>分组</td>
+            <td>选择专门的 Kiro 分组，不要和其他 Claude 中转账号混在一起</td>
+        </tr>
+    </table>
+
+    <div class="warning-box">
+        <b>一个 API Key 不等于一个 Kiro 账号。</b>Kiro RS 对外只有一个统一的 <code>sk-kiro-rs-...</code> 服务入口。
+        它背后可以挂 1 个、16 个或更多 Kiro 凭据。给 sub2api 填这一个 Key 即可，Kiro RS 会在内部号池里轮换。
+    </div>
+
+    <h3>十二、16 账号号池的经验总结</h3>
+
+    <p>多账号池的 <code>credentials.json</code> 是数组格式。每个账号都应该包含刷新所需字段，尤其是 IdC 模式下的 <code>clientId</code> 和 <code>clientSecret</code>。</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>[
+  {
+    "authMethod": "idc",
+    "accessToken": "ACCESS_TOKEN",
+    "refreshToken": "REFRESH_TOKEN",
+    "clientId": "CLIENT_ID",
+    "clientSecret": "CLIENT_SECRET",
+    "region": "us-east-1",
+    "authRegion": "us-east-1",
+    "apiRegion": "us-east-1",
+    "endpoint": "ide",
+    "priority": 0,
+    "disabled": false
+  }
+]</code></pre>
+    </div>
+
+    <p>新增号池时，不需要换 sub2api 中的 API Key。只要 <code>config.json</code> 里的 <code>apiKey</code> 不变，外部调用入口就不变。</p>
+
+    <div class="substep">
+        <b>少量账号封控：</b>如果 16 个账号里有 1-3 个被封或刷新失败，Kiro RS 会把坏账号标记为 <code>disabled</code>，剩余账号继续服务。
+    </div>
+
+    <div class="substep">
+        <b>多个账号额度用完：</b>池子不会立刻崩，但 <code>available</code> 会下降。只有当可用账号变成 0 时，用户侧才会出现 <code>No available accounts</code>。
+    </div>
+
+    <div class="substep">
+        <b>模型列表不等于真实可用：</b><code>/v1/models</code> 可能列出 Opus 或 Sonnet 4.6，但真实调用仍可能返回 <code>INVALID_MODEL_ID</code>。务必用 <code>/v1/messages</code> 做真实请求测试。
+    </div>
+
+    <h3>十三、远程服务器常用检查命令</h3>
+
+    <p>下面命令在本机 Windows PowerShell 中执行，通过 SSH 查看海外服务器状态。把服务器 IP 和密钥路径换成自己的。</p>
+
+    <p>查看号池总览：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>ssh -i "$env:USERPROFILE\.ssh\kiro_rs_sync_ed25519" root@YOUR_SERVER_IP 'ADMIN_KEY=$(jq -r .adminApiKey /opt/kiro-rs/config/config.json); curl -s http://127.0.0.1:8990/api/admin/credentials -H x-api-key:${ADMIN_KEY} | jq "{total,available,currentId,disabled:([.credentials[] | select(.disabled==true)] | length)}"'</code></pre>
+    </div>
+
+    <p>查看每个账号状态：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>ssh -i "$env:USERPROFILE\.ssh\kiro_rs_sync_ed25519" root@YOUR_SERVER_IP 'ADMIN_KEY=$(jq -r .adminApiKey /opt/kiro-rs/config/config.json); curl -s http://127.0.0.1:8990/api/admin/credentials -H x-api-key:${ADMIN_KEY} | jq ".credentials[] | {id,priority,disabled,disabledReason,successCount,refreshFailureCount,lastUsedAt,expiresAt}"'</code></pre>
+    </div>
+
+    <p>查看 Kiro RS 日志：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>ssh -i "$env:USERPROFILE\.ssh\kiro_rs_sync_ed25519" root@YOUR_SERVER_IP 'docker logs --tail=100 kiro-rs'</code></pre>
+    </div>
+
+    <p>测试真实对话：</p>
+
+    <div class="copy-block">
+        <button class="copy-btn" onclick="copyCode(this)">复制</button>
+        <pre><code>ssh -i "$env:USERPROFILE\.ssh\kiro_rs_sync_ed25519" root@YOUR_SERVER_IP 'API_KEY=$(jq -r .apiKey /opt/kiro-rs/config/config.json); BODY="{\"model\":\"claude-sonnet-4-5-20250929\",\"max_tokens\":40,\"messages\":[{\"role\":\"user\",\"content\":\"hi, reply ok\"}]}"; curl -s http://127.0.0.1:8990/v1/messages -H Content-Type:application/json -H x-api-key:${API_KEY} -H anthropic-version:2023-06-01 -d "$BODY"'</code></pre>
+    </div>
+
+    <h3>十四、常见问题</h3>
 
     <h4>Q：ccswitch 启用时报 <code>.claude.json expected value at line 1 column 1</code>？</h4>
     <p>这通常是 <code>C:\Users\你的用户名\.claude.json</code> 文件开头带 UTF-8 BOM，部分 JSON 解析器不能识别。可以备份后重写为无 BOM UTF-8。</p>
@@ -1599,7 +1799,24 @@ Invoke-RestMethod `
     <p><b>填 <code>http://127.0.0.1:8990</code>，不要填 <code>/v1/messages</code>。</b>ccswitch 会自己拼接 Claude API 路径。</p>
 
     <h4>Q：可以接入 sub2api 吗？</h4>
-    <p>可以，但前提是你的 sub2api 支持 <b>Anthropic / Claude Compatible</b> 上游。Base URL 填 <code>http://127.0.0.1:8990</code> 或 <code>http://127.0.0.1:8990/v1</code>，取决于它是否会自动拼接 <code>/v1/messages</code>。</p>
+    <p>
+        可以，但前提是你的 sub2api 支持 <b>Anthropic / Claude Compatible</b> 上游。
+        如果 sub2api 和 Kiro RS 在同一台服务器同一个 Docker 网络里，Base URL 填 <code>http://kiro-rs:8990</code>。
+        如果只是本机自己测试，才使用 <code>http://127.0.0.1:8990</code>。
+    </p>
+
+    <h4>Q：sub2api 后台测试成功，但用户 key 调用报 <code>No available accounts</code>？</h4>
+    <p>
+        优先检查 <b>用户 API Key 绑定的分组</b> 和 <b>Kiro RS 账号所在分组</b> 是否一致。
+        实战中最容易出现的情况是：后台测试的是账号 A，但用户 key 走的是另一个空分组，所以 sub2api 日志里会出现 <code>group_id=某个分组</code>、<code>error="no available accounts"</code>。
+    </p>
+
+    <h4>Q：为什么 Claude Code 还是显示 Opus 4.8？</h4>
+    <p>
+        这通常是本机 Claude Code 配置没有指定 <code>ANTHROPIC_MODEL</code>，或者 ccswitch 仍然保留旧模型配置。
+        对 Kiro 分组建议显式设置 <code>ANTHROPIC_MODEL=claude-sonnet-4-5-20250929</code>，并把 <code>ANTHROPIC_DEFAULT_OPUS_MODEL</code> 也临时映射到 Sonnet 4.5。
+        改完配置后，需要关闭旧的 Claude Code 终端重新打开。
+    </p>
 
     <h4>Q：如何停止或重启服务？</h4>
     <p>停止服务：</p>
